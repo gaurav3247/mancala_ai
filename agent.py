@@ -37,8 +37,8 @@ def compute_heuristic(board, color):
     opponenets seeds from opposite pit.
     """
     empty_pockets, utility = helper_empty_pockets(board, color), compute_utility(board, color)
-
-    return empty_pockets + utility
+    repeat_moves = helper_extra_move(board, color)
+    return empty_pockets + 2 * utility + repeat_moves
 
 def helper_empty_pockets(board, color):
     """This heuristic tries to maximise the number of empty pockets."""
@@ -49,6 +49,25 @@ def helper_empty_pockets(board, color):
             non_empty += 1
 
     return non_empty
+
+def helper_extra_move(board, color):
+    """"This heuristic tries to win an extra move by favoring moves resulting in
+    an extra move"""
+    repeat_moves = 0
+    pockets = board.pockets[color]
+
+    if color == 0:
+        dir_ = -1
+        repeat_pocket = 0
+    else:
+        dir_ = 1
+        repeat_pocket = len(board.pockets[color]) - 1
+    for i, seeds in enumerate(pockets):
+        if (i + (dir_ * seeds)) == repeat_pocket:
+            repeat_moves += 1
+
+    return repeat_moves
+
 
 ################### MINIMAX METHODS ####################
 def min_move(board, color, limit, caching):
@@ -61,7 +80,7 @@ def min_move(board, color, limit, caching):
         return None, compute_utility(board, color)
 
     for possible_move in moves:
-        board_ = play_move(board, p2, possible_move)
+        board_ = play_move(board, p2, possible_move)[0]
         flag = True
         if caching:
             if board_ in cache and cache[board_][2] == color:
@@ -87,7 +106,7 @@ def max_move(board, color, limit, caching):
         return None, compute_utility(board, color)
 
     for possible_move in moves:
-        board_ = play_move(board, color, possible_move)
+        board_ = play_move(board, color, possible_move)[0]
         if caching:
             if board_ in cache and cache[board_][2] == color:
                 move_, utility_ = cache[board_][0], cache[board_][1]
@@ -126,7 +145,7 @@ def min_move_ab(board, color, limit, caching, alpha, beta):
         return None, compute_utility(board, color)
 
     for possible_move in moves:
-        board_ = play_move(board, p2, possible_move)
+        board_ = play_move(board, p2, possible_move)[0]
         if caching:
             if board_ in cache and cache[board_][2] == color:
                 move_, utility_ = cache[board_][0], cache[board_][1]
@@ -150,7 +169,7 @@ def max_move_ab(board, color, limit, caching, alpha, beta):
         return None, compute_utility(board, color)
 
     for possible_move in moves:
-        board_ = play_move(board, color, possible_move)
+        board_ = play_move(board, color, possible_move)[0]
         if caching:
             if board_ in cache and cache[board_][2] == color:
                 move_, utility_ = cache[board_][0], cache[board_][1]
@@ -366,6 +385,7 @@ def run_ai():
                 move = select_move_alphabeta(board, color, limit, bool(CACHING))
             else:
                 move = select_move_minimax(board, color, limit, bool(CACHING))
+                print(move)
 
             print("{}".format(move))
 

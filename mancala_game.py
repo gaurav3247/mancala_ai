@@ -135,7 +135,8 @@ class MancalaGameManager(object):
         if self.board.pockets[j][i] == 0 or j != self.current_player:
            raise InvalidMoveError("That is not a valid move for this player.")
 
-        self.board, repeat_move = play_move(self.board, self.current_player, i)
+        self.board = play_move(self.board, self.current_player, i)[0]
+        repeat_move = play_move(self.board, self.current_player, i)[1]
         self.current_player = abs(self.current_player - int(not repeat_move)) #can be 0 or 1
 
     def get_possible_moves(self):
@@ -150,9 +151,11 @@ def get_possible_moves(board, player):
     # Board is printed upside down!
     # p = abs(player - 1)
     result = []
+    # print(board)
     for j in range(len(board.pockets[player])):
         if board.pockets[player][j] > 0: # If there are pieces to move
             result.append(j)
+
     return result
 
 def end_game(board, player):
