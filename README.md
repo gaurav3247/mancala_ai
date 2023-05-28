@@ -1,8 +1,8 @@
 Mancala AI.
 
 The board game of Mancala implemented in python with two types of bots/computer players.
-1. Randy_ai: randomly selects a possible move.
-2. Agent: Mancala bot that uses minimax or alpha-beta and a heuristic to select a move.
+1. randy_ai.py: randomly selects a possible move.
+2. agent.py: Mancala bot that uses minimax or alpha-beta and a heuristic to select a move.
 
 How to play-
 Use command line with following command
