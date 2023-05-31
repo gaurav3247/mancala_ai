@@ -11,7 +11,7 @@ import time
 from mancala_game import Board, get_possible_moves, eprint, play_move, MCTS, end_game
 
 cache={} # Use this variable for your state cache; Use it if caching is on
-
+file = open("output2.txt", "w")
 # Implement the below functions. You are allowed to define additional functions that you believe will come in handy.
 def compute_utility(board, side):
     # IMPLEMENT!
@@ -38,7 +38,9 @@ def compute_heuristic(board, color):
     """
     empty_pockets, utility = helper_empty_pockets(board, color), compute_utility(board, color)
     repeat_moves = helper_extra_move(board, color)
-    return empty_pockets + 2 * utility + repeat_moves
+    opponent_capture = helper_opponent_capture(board, color)
+    self_capture = helper_self_capture(board, color)
+    return empty_pockets + 2 * utility + repeat_moves + opponent_capture - self_capture
 
 def helper_empty_pockets(board, color):
     """This heuristic tries to maximise the number of empty pockets."""
@@ -49,6 +51,30 @@ def helper_empty_pockets(board, color):
             non_empty += 1
 
     return non_empty
+
+def helper_opponent_capture(board, color):
+    """This heuristic favors boards with more capture opportunities for
+    yourself."""
+    num_oponent_capture = 0
+    p2 = abs(color - 1)
+    for i, seeds in enumerate(board.pockets[color]):
+        if seeds == 0:
+            if board.pockets[p2][i] != 0:
+                num_oponent_capture += 1
+
+    return num_oponent_capture
+
+def helper_self_capture(board, color):
+    """This heuristic favors boards with less capture opportunities for
+    opponent."""
+    num_self_capture = 0
+    p2 = abs(color - 1)
+    for i, seeds in enumerate(board.pockets[p2]):
+        if seeds == 0:
+            if board.pockets[color][i] != 0:
+                num_self_capture += 1
+
+    return num_self_capture
 
 def helper_extra_move(board, color):
     """"This heuristic tries to win an extra move by favoring moves resulting in
@@ -75,13 +101,11 @@ def min_move(board, color, limit, caching):
     moves = get_possible_moves(board, p2)
     utility = math.inf
     move = None
-
     if not moves or limit <= 0:
         return None, compute_utility(board, color)
 
     for possible_move in moves:
         board_ = play_move(board, p2, possible_move)[0]
-        flag = True
         if caching:
             if board_ in cache and cache[board_][2] == color:
                 move_, utility_ = cache[board_][0], cache[board_][1]
@@ -101,9 +125,9 @@ def max_move(board, color, limit, caching):
     moves = get_possible_moves(board, color)
     utility = -math.inf
     move = None
-
     if moves == [] or limit <= 0:
         return None, compute_utility(board, color)
+    # p2 = abs(color - 1)
 
     for possible_move in moves:
         board_ = play_move(board, color, possible_move)[0]
@@ -130,15 +154,17 @@ def select_move_minimax(board, color, limit=-1, caching = False):
     INPUT: a game state, the player that is in control, the depth limit for the search, and a boolean that determines whether state caching is on or not
     OUTPUT: an integer that represents a move
     """
+    # print("board", board.pockets, "possible moves: ", get_possible_moves(board, color), file=file)
     if limit == -1:
         limit = math.inf
     move, utility = max_move(board, color, limit, caching)
+
     return move
 
 ################### ALPHA-BETA METHODS ####################
 def min_move_ab(board, color, limit, caching, alpha, beta):
     p2 = abs(color - 1)
-    moves = get_possible_moves(board, p2)
+    moves = get_possible_moves(board, color)
     utility = math.inf
     move = None
     if moves == [] or limit <= 0:
@@ -246,6 +272,13 @@ def choose_move(board, color, mcts_tree):
     # 1. See if a given game state is in the MCTS tree.
     # 2. If yes, return the move that is associated with the highest average reward in the tree (from the perspective of the player 'color')
     # 3. If no, return a random move
+    possible_moves = get_possible_moves(board, color)
+    successors = mcts_tree.successors.get(board, '')
+
+    if successors == '':
+        return random.choice(possible_moves)
+
+
     raise RuntimeError("Method not implemented") # Replace this line!
 
 
@@ -385,7 +418,6 @@ def run_ai():
                 move = select_move_alphabeta(board, color, limit, bool(CACHING))
             else:
                 move = select_move_minimax(board, color, limit, bool(CACHING))
-                print(move)
 
             print("{}".format(move))
 

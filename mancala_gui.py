@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-This module contains a simple graphical user interface for Mancala. 
+This module contains a simple graphical user interface for Mancala.
 
 Thanks to Daniel Bauer, Columbia University, for a version of Othello that this was based on
 """
@@ -22,7 +22,7 @@ class MancalaGui(object):
         self.players = [player1, player2]
         self.height = 2  #2 sides to the board
         self.width = self.game.dimension #pit count
-        
+
         self.offset = 3
         self.cell_size = 100
         self.stone_size = 10
@@ -59,9 +59,9 @@ class MancalaGui(object):
             if not get_possible_moves(self.game.board, self.game.current_player):
                 other_player = abs(self.game.current_player-1)
                 self.game.board.pockets, value = end_game(self.game.board, other_player)
-                self.game.board.mancalas[other_player] += value                
+                self.game.board.mancalas[other_player] += value
                 self.draw_board()
-                winner = "Player B" if (self.game.board.mancalas[0] > self.game.board.mancalas[1]) else "Player A" 
+                winner = "Player B" if (self.game.board.mancalas[0] > self.game.board.mancalas[1]) else "Player A"
                 self.log("GAME OVER: winner is {}".format(winner))
                 self.shutdown("Game Over")
             elif isinstance(self.players[self.game.current_player], AiPlayerInterface):
@@ -71,13 +71,13 @@ class MancalaGui(object):
             self.log("Invalid move. {},{}".format(i,j))
 
     def shutdown(self, text):
-        self.move_label["text"] = text 
+        self.move_label["text"] = text
         self.root.unbind("<Button-1>")
-        if isinstance(self.players[0], AiPlayerInterface): 
+        if isinstance(self.players[0], AiPlayerInterface):
             self.players[0].kill(self.game)
-        if isinstance(self.players[1], AiPlayerInterface): 
+        if isinstance(self.players[1], AiPlayerInterface):
             self.players[1].kill(self.game)
- 
+
     def ai_move(self):
         player_obj = self.players[self.game.current_player]
         try:
@@ -96,12 +96,12 @@ class MancalaGui(object):
                 self.game.board.pockets, value = end_game(self.game.board, other_player)
                 self.game.board.mancalas[other_player] += value
                 self.draw_board()
-                winner = "Player B" if (self.game.board.mancalas[0] > self.game.board.mancalas[1]) else "Player A" 
+                winner = "Player B" if (self.game.board.mancalas[0] > self.game.board.mancalas[1]) else "Player A"
                 self.log("GAME OVER: winner is {}".format(winner))
                 self.shutdown("Game Over")
             elif isinstance(self.players[self.game.current_player], AiPlayerInterface):
                 self.root.after(1, lambda: self.ai_move())
-            else: 
+            else:
                 self.root.bind("<Button-1>",lambda e: self.mouse_pressed(e))
         except AiTimeoutError:
             self.shutdown("Game Over, {} lost (timeout)".format(player_obj.name))
@@ -109,8 +109,8 @@ class MancalaGui(object):
     def run(self):
         if isinstance(self.players[0], AiPlayerInterface):
             self.root.after(10, lambda: self.ai_move())
-        else: 
-            self.root.bind("<Button-1>",lambda e: self.mouse_pressed(e))        
+        else:
+            self.root.bind("<Button-1>",lambda e: self.mouse_pressed(e))
         self.draw_board()
         self.canvas.mainloop()
 
@@ -119,18 +119,18 @@ class MancalaGui(object):
         self.draw_stones()
         player = "Player A" if self.game.current_player == 1 else "Player B"
         self.move_label["text"]= player
-        self.score_label["text"]= "Player B {} : {} Player A".format(*self.game.board.mancalas) 
-   
-    def log(self, msg, newline = True): 
+        self.score_label["text"]= "Player B {} : {} Player A".format(*self.game.board.mancalas)
+
+    def log(self, msg, newline = True):
         self.text.insert("end","{}{}".format(msg, "\n" if newline else ""))
         self.text.see("end")
- 
+
     def draw_pits(self):
         colors = ("light green", "light blue") if self.game.current_player == 1 else ("light blue", "light green")
         for i in range(1,self.width+1):
             self.canvas.create_oval(i*self.cell_size + self.offset, self.offset, (i+1)*self.cell_size + self.offset, self.cell_size + self.offset, fill=colors[0])
             self.canvas.create_oval(i*self.cell_size + self.offset, self.cell_size + self.offset, (i+1)*self.cell_size + self.offset, 2*self.cell_size + self.offset, fill=colors[1])
-        
+
         #pits for players
         self.canvas.create_oval(self.offset, self.offset, self.cell_size + self.offset, 2*self.cell_size + self.offset, fill="white")
         self.canvas.create_oval((self.width+1)*self.cell_size + self.offset, self.offset, (self.width+2)*self.cell_size + self.offset, 2*self.cell_size + self.offset, fill="white")
@@ -139,10 +139,10 @@ class MancalaGui(object):
     def draw_stone(self, i, j):
         x = (i + 0.5) * self.cell_size - self.stone_size/2 + random.randint(0,20) - 10
         y = (j + 0.5) * self.cell_size - self.stone_size/2 + random.randint(0,20) - 10
-        
+
         self.canvas.create_oval(x, y, x+self.stone_size, y+self.stone_size, fill="green")
-        
-    def draw_stones(self):       
+
+    def draw_stones(self):
         for i in range(2):
             for j in range(1,len(self.game.board.pockets[i])+1):
                 x = (j + 0.5) * self.cell_size + self.offset
@@ -163,7 +163,7 @@ class MancalaGui(object):
         #draw disks in the stone pits
         for i in range(self.game.board.mancalas[1]):
             x = (self.width+1.5)*self.cell_size + random.randint(0,20) - 10
-            y = self.cell_size + random.randint(0,20) - 10 
+            y = self.cell_size + random.randint(0,20) - 10
             self.canvas.create_oval(x, y, x + self.stone_size, y + self.stone_size, fill="red")
         x = (self.width+1.5)*self.cell_size
         y = 2*self.cell_size - 2*self.offset
@@ -175,7 +175,7 @@ def main(argv):
     random.seed(datetime.now().timestamp())
 
     size = 0
-    limit = -1       
+    limit = -1
     algorithm = 0
     agent1 = None
     agent2 = None
@@ -201,12 +201,12 @@ def main(argv):
         elif opt in ("-t", "--type"):
             algorithm = int(arg)
         elif opt in ("-l", "--limit"):
-            limit = int(arg)  
+            limit = int(arg)
 
     if size <= 0: #if no dimension provided
         print('Please provide a board size.')
         print('mancala_gui.py -d <dimension> [-a <agentA> -b <agentB> -l <depth-limit> -t <algorithm-choice> -c]')
-        sys.exit(2)  
+        sys.exit(2)
 
     if agent1 != None and agent2 != None and size > 0:
         p1 = AiPlayerInterface(agent1, 0, limit, algorithm, caching)
@@ -214,14 +214,16 @@ def main(argv):
     elif agent1 != None and size > 0:
         p1 = Player(0)
         p2 = AiPlayerInterface(agent1, 1, limit, algorithm, caching)
-    else: 
+    else:
         p1 = Player(0)
         p2 = Player(1)
-        
+
     game = MancalaGameManager(size)
-    gui = MancalaGui(game, p1, p2) 
+    gui = MancalaGui(game, p1, p2)
     gui.run()
 
 if __name__ == "__main__":
-   main(sys.argv[1:])
-
+    print(sys.argv[1:])
+    main(sys.argv[1:])
+    # args = ['-d', '5', '-a', 'randy_ai.py', '-b', 'agent.py', '-l', '5']
+    # main(args)

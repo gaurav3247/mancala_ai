@@ -10,7 +10,7 @@ import sys
 import subprocess
 from threading import Timer
 from collections import defaultdict
-
+file = open("output.txt", "w")
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
@@ -131,12 +131,16 @@ class MancalaGameManager(object):
     def play(self, i, j):
         i = int(i)
         j = int(j)
+        print()
         #eprint("{} {}".format(i, j))
         if self.board.pockets[j][i] == 0 or j != self.current_player:
-           raise InvalidMoveError("That is not a valid move for this player.")
+        # if j != self.current_player:
+            print("player:", j, " move:", i, " ", self.board.pockets, self.current_player == j, file=file)
+            raise InvalidMoveError("That is not a valid move for this player.")
 
-        self.board = play_move(self.board, self.current_player, i)[0]
-        repeat_move = play_move(self.board, self.current_player, i)[1]
+        self.board, repeat_move = play_move(self.board, self.current_player, i)
+        # self.board = play_move(self.board, self.current_player, i)[0]
+        # repeat_move = play_move(self.board, self.current_player, i)[1]
         self.current_player = abs(self.current_player - int(not repeat_move)) #can be 0 or 1
 
     def get_possible_moves(self):
@@ -165,7 +169,7 @@ def end_game(board, player):
         new_board.append(list(row[:]))
 
     for j in range(len(new_board[player])):
-        value +=  new_board[player][j]
+        value += new_board[player][j]
         new_board[player][j] = 0
 
     final = []
