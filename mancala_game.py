@@ -135,7 +135,6 @@ class MancalaGameManager(object):
         #eprint("{} {}".format(i, j))
         if self.board.pockets[j][i] == 0 or j != self.current_player:
         # if j != self.current_player:
-            print("player:", j, " move:", i, " ", self.board.pockets, self.current_player == j, file=file)
             raise InvalidMoveError("That is not a valid move for this player.")
 
         self.board, repeat_move = play_move(self.board, self.current_player, i)

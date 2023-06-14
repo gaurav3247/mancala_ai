@@ -102,7 +102,7 @@ def min_move(board, color, limit, caching):
     utility = math.inf
     move = None
     if not moves or limit <= 0:
-        return None, compute_utility(board, color)
+        return None, compute_heuristic(board, color)
 
     for possible_move in moves:
         board_ = play_move(board, p2, possible_move)[0]
@@ -126,7 +126,7 @@ def max_move(board, color, limit, caching):
     utility = -math.inf
     move = None
     if moves == [] or limit <= 0:
-        return None, compute_utility(board, color)
+        return None, compute_heuristic(board, color)
     # p2 = abs(color - 1)
 
     for possible_move in moves:
@@ -154,7 +154,6 @@ def select_move_minimax(board, color, limit=-1, caching = False):
     INPUT: a game state, the player that is in control, the depth limit for the search, and a boolean that determines whether state caching is on or not
     OUTPUT: an integer that represents a move
     """
-    # print("board", board.pockets, "possible moves: ", get_possible_moves(board, color), file=file)
     if limit == -1:
         limit = math.inf
     move, utility = max_move(board, color, limit, caching)
@@ -168,7 +167,7 @@ def min_move_ab(board, color, limit, caching, alpha, beta):
     utility = math.inf
     move = None
     if moves == [] or limit <= 0:
-        return None, compute_utility(board, color)
+        return None, compute_heuristic(board, color)
 
     for possible_move in moves:
         board_ = play_move(board, p2, possible_move)[0]
@@ -192,7 +191,7 @@ def max_move_ab(board, color, limit, caching, alpha, beta):
     utility = -math.inf
     move = None
     if moves == [] or limit <= 0:
-        return None, compute_utility(board, color)
+        return None, compute_heuristic(board, color)
 
     for possible_move in moves:
         board_ = play_move(board, color, possible_move)[0]
