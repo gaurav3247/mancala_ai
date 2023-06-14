@@ -10,7 +10,7 @@ import sys
 import subprocess
 from threading import Timer
 from collections import defaultdict
-file = open("output.txt", "w")
+
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 

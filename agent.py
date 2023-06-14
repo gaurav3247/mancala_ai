@@ -11,7 +11,7 @@ import time
 from mancala_game import Board, get_possible_moves, eprint, play_move, MCTS, end_game
 
 cache={} # Use this variable for your state cache; Use it if caching is on
-file = open("output2.txt", "w")
+
 # Implement the below functions. You are allowed to define additional functions that you believe will come in handy.
 def compute_utility(board, side):
     # IMPLEMENT!
